@@ -18,6 +18,7 @@ moyenneApp.controller('MainCtrl', function($scope, $http) {
         213841: 'Hans Walraven',
         221517: 'Ed Huisman'
     };
+    $scope.calculations = {};
     $scope.matchDetails = [];
     $scope.matches = [];
     $scope.setPlayer = function(id) {
@@ -52,6 +53,7 @@ moyenneApp.controller('MainCtrl', function($scope, $http) {
     $scope.fetchMatchDetails = function() {
         $scope.matchDetails = [];
         $scope.progress = 0;
+        $scope.calculations.current = {};
         var required = 12;
         var done = 0;
         $scope.updateProgress(required, done);
@@ -64,6 +66,7 @@ moyenneApp.controller('MainCtrl', function($scope, $http) {
                 $scope.updateProgress(required, ++done);
                 if(done == required) {
                     $scope.markMatchDetails();
+                    $scope.calculateCurrent();
                 }
             });
             return order<11;
@@ -73,7 +76,6 @@ moyenneApp.controller('MainCtrl', function($scope, $http) {
         $scope.matchDetails.sort(function(a, b) {
             return a.moyenne - b.moyenne;
         });
-
         var size = $scope.matchDetails;
         var counter = 0;
         $.each($scope.matchDetails, function(id, data){
@@ -84,5 +86,18 @@ moyenneApp.controller('MainCtrl', function($scope, $http) {
                 $scope.matchDetails[id].included = true;
             }
         });
+    };
+    $scope.calculateCurrent = function() {
+        $scope.calculations.current = {
+            'amount': 0,
+            'turns': 0
+        };
+        $.each($scope.matchDetails, function(id, data){
+            if(data.included) {
+                $scope.calculations.current.amount += data.amount;
+                $scope.calculations.current.turns += data.turns;
+            }
+        });
+        $scope.calculations.current.moyenne = $scope.calculations.current.amount / $scope.calculations.current.turns;
     }
 });

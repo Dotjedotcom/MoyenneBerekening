@@ -38,18 +38,32 @@ foreach($namespan as $span) {
 }
 
 // Find the matches
-$matchesTable = $html->find('table')[1];
-$map = array('district', 'poule', 'nummer', 'datum', 'wedstrijdnummer', 'moyenne');
-$matches = array('poule', 'beker');
-foreach($matchesTable->children as $row) {
-    $match = array();
-    foreach($row->children as $key => $cell) {
-        $match[$map[$key]] = $cell->plaintext;
+function getMatches($html) {
+    $matchesTable = $html->find('table')[1];
+    $map = array('district', 'poule', 'nummer', 'datum', 'wedstrijdnummer', 'moyenne');
+    $matches = array('poule', 'beker');
+    $result = array();
+    foreach($matchesTable->children as $row) {
+        $match = array();
+        foreach($row->children as $key => $cell) {
+            $match[$map[$key]] = $cell->plaintext;
+        }
+        foreach($row->find('a') as $link) {
+            $match['gameid'] = str_replace('carambole4.htm.php?GameID=', '', $link->href);
+        }
+        if (strposa(strtolower($match['poule']), $matches)) $result[] = $match;
     }
-    foreach($row->find('a') as $link) {
-        $match['gameid'] = str_replace('carambole4.htm.php?GameID=', '', $link->href);
-    }
-    if (strposa(strtolower($match['poule']), $matches)) $results['matches'][] = $match;
+    array_shift($result);
+    return $result;
 }
-array_shift($results['matches']);
+$results['matches'] = getMatches($html);
+if(count($results['matches']) < 12) {
+    $season = intval($html->find('input[name=SeasonID]')[0]->value);
+    $url = 'http://competitie.knbb.nl/participance.php?ID=' . $id . '&SeasonID=' . ($season-1);
+    $html = file_get_html($url);
+    $more = getMatches($html);
+    foreach($more as $match){
+        $results['matches'][] = $match;
+    }
+}
 echo json_encode($results);

@@ -32,7 +32,11 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="row">
             <div class="col-md-12 text-center" ng-show="matchloader"><img src="img/loading.gif"/></div>
+        </div>
+        <div class="row">
             <div class="col-md-12" ng-show="matches.length">
                 <div>
                     <ul class="nav nav-tabs" role="tablist">
@@ -60,6 +64,16 @@
                             <div class="progress" ng-show="progress < 100">
                                 <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em; width: {{ progress }}%;">{{ progress }}%</div>
                             </div>
+                            <div class="panel panel-default" ng-show="calculations.current.amount">
+                                <div class="panel-heading">Huidig</div>
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-xs-3"><label>Gemaakt:</label> {{ calculations.current['amount'] }}</div>
+                                        <div class="col-xs-3"><label>Beurten:</label> {{ calculations.current['turns'] }}</div>
+                                        <div class="col-xs-3"><label>Moyenne:</label> {{ calculations.current['moyenne']|number:3 }}</div>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="table-responsive">
                                 <table class="table table-condensed">
                                     <tr>
@@ -78,7 +92,6 @@
                                     </tr>
                                 </table>
                             </div>
-
                         </div>
                     </div>
                 </div>
