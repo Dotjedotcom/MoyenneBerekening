@@ -54,7 +54,7 @@
                                     </tr>
                                     <tr ng-repeat="(index, match) in matches" ng-class="{'info': index < 12, 'text-muted': index >= 12}">
                                         <th>{{ index + 1 }}</th>
-                                        <td>{{ match.wedstrijdnummer }}</td>
+                                        <td><a target="_blank" href="http://competitie.knbb.nl/carambole4.htm.php?GameID={{ match.gameid }}">{{ match.wedstrijdnummer }}</a></td>
                                         <td class="text-right">{{ match.moyenne }}</td>
                                     </tr>
                                 </table>
@@ -70,7 +70,7 @@
                                     <div class="row">
                                         <div class="col-xs-3"><label>Gemaakt:</label> {{ calculations.current['amount'] }}</div>
                                         <div class="col-xs-3"><label>Beurten:</label> {{ calculations.current['turns'] }}</div>
-                                        <div class="col-xs-3"><label>Moyenne:</label> {{ calculations.current['moyenne']|number:3 }}</div>
+                                        <div class="col-xs-3"><label>Moyenne:</label> {{ calculations.current['moyenne']|number:2 }}</div>
                                     </div>
                                 </div>
                             </div>

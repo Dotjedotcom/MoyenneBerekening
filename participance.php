@@ -47,6 +47,10 @@ function getMatches($html) {
         $match = array();
         foreach($row->children as $key => $cell) {
             $match[$map[$key]] = $cell->plaintext;
+            if ($map[$key] == 'datum' && $match[$map[$key]] != 'Datum') {
+                $timestamp = DateTime::createFromFormat('d-m-Y', $match[$map[$key]]);
+                $match['timestamp'] = intval($timestamp->getTimestamp());
+            }
         }
         foreach($row->find('a') as $link) {
             $match['gameid'] = str_replace('carambole4.htm.php?GameID=', '', $link->href);

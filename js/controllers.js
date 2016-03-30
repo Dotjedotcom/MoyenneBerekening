@@ -41,6 +41,20 @@ moyenneApp.controller('MainCtrl', function($scope, $http) {
                 $scope.error = false;
                 $scope.addPlayer(response.data.player);
                 $scope.matches = response.data.matches;
+                $scope.matches.sort(function(a, b) {
+                    if (a.timestamp < b.timestamp) {
+                        return 1;
+                    } else if(a.timestamp > b.timestamp) {
+                        return -1;
+                    } else {
+                        if (a.nummer < b.nummer) {
+                            return -1;
+                        } else if(a.nummer > b.nummer) {
+                            return 1;
+                        }
+                        return 0;
+                    }
+                });
             }
             $scope.matchloader = false;
             $scope.fetchMatchDetails();
@@ -74,7 +88,12 @@ moyenneApp.controller('MainCtrl', function($scope, $http) {
     };
     $scope.markMatchDetails = function() {
         $scope.matchDetails.sort(function(a, b) {
-            return a.moyenne - b.moyenne;
+            if (a.moyenne > b.moyenne) {
+                return 1;
+            } else if (a.moyenne < b.moyenne) {
+                return -1;
+            }
+            return 0;
         });
         var size = $scope.matchDetails;
         var counter = 0;
