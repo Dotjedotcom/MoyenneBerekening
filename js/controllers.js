@@ -6,7 +6,8 @@ moyenneApp.controller('MainCtrl', function($scope, $http) {
     $scope.error = false;
     $scope.player = {
         id: '',
-        name: 'Selecteer speler'
+        name: 'Selecteer speler',
+        required: 0
     };
     $scope.players = {
         142008: 'Gert van Beek',
@@ -78,16 +79,20 @@ moyenneApp.controller('MainCtrl', function($scope, $http) {
                 response.data.moyenne = response.data.amount / response.data.turns;
                 $scope.matchDetails.push(response.data);
                 $scope.updateProgress(required, ++done);
+                if(order == 1) {
+                    $scope.player.required = response.data.required;
+                }
                 if(done == required) {
-                    $scope.markMatchDetails();
-                    $scope.calculateCurrent();
+                    $scope.matchDetails = markMatchDetails($scope.matchDetails);
+                    calculateCurrent();
+                    calculatePredictions();
                 }
             });
             return order<11;
         });
     };
-    $scope.markMatchDetails = function() {
-        $scope.matchDetails.sort(function(a, b) {
+    var markMatchDetails = function(matchDetails) {
+        matchDetails.sort(function(a, b) {
             if (a.moyenne > b.moyenne) {
                 return 1;
             } else if (a.moyenne < b.moyenne) {
@@ -95,28 +100,84 @@ moyenneApp.controller('MainCtrl', function($scope, $http) {
             }
             return 0;
         });
-        var size = $scope.matchDetails;
         var counter = 0;
-        $.each($scope.matchDetails, function(id, data){
+        $.each(matchDetails, function(id, data){
             counter++;
-            if (counter <= 3 || counter > 9){
-                $scope.matchDetails[id].included = false;
-            } else {
-                $scope.matchDetails[id].included = true;
-            }
+            matchDetails[id].included = !(counter <= 3 || counter > 9);
         });
+        return matchDetails;
     };
-    $scope.calculateCurrent = function() {
-        $scope.calculations.current = {
+
+    var calculate = function(matches) {
+        var result = {
             'amount': 0,
-            'turns': 0
+            'turns': 0,
+            'moyenne': 0
         };
-        $.each($scope.matchDetails, function(id, data){
+        $.each(matches, function(id, data){
             if(data.included) {
-                $scope.calculations.current.amount += data.amount;
-                $scope.calculations.current.turns += data.turns;
+                result.amount += data.amount;
+                result.turns += data.turns;
             }
         });
-        $scope.calculations.current.moyenne = $scope.calculations.current.amount / $scope.calculations.current.turns;
+        result.moyenne = result.amount / result.turns;
+        return result;
+    };
+
+    var calculateCurrent = function() {
+        $scope.calculations.current = calculate($scope.matchDetails);
+    };
+
+    var addMatch = function(matches, match) {
+        matches.sort(function(a,b){
+            if(a.order > b.order) {
+                return 1;
+            } else if(a.order < b.order) {
+                return -1;
+            }
+            return 0;
+        });
+        matches.pop();
+        $.each(matches, function(id, match) {
+            matches[id].order++;
+        });
+        match.order = 0;
+        match.moyenne = match.amount / match.turns;
+        matches.push(match);
+        return matches;
+    };
+
+    var calculatePredictions = function() {
+        var required = $scope.player.required;
+        $scope.predictions = [];
+        var predictions = [];
+        var predictions_amount = 30;
+        var high = 0;
+        for(var i=0; i<predictions_amount; i++){
+            var matches = angular.copy($scope.matchDetails);
+            var turns = i+1;
+            var match = {'required': required, 'amount': required, 'turns': turns};
+            matches = addMatch(matches, match);
+            matches = markMatchDetails(matches);
+            var moyenne = calculate(matches).moyenne;
+            predictions[i] = {
+                'required': required,
+                'turns': turns,
+                'moyenne': moyenne,
+                'status': 'mid'
+            }
+        }
+        $.each(predictions, function(index, prediction) {
+            if(predictions[index+1].moyenne != prediction.moyenne) return false;
+            predictions[index].status = 'low';
+        });
+        predictions.reverse();
+        $.each(predictions, function(index, prediction) {
+            if(predictions[index+1].moyenne != prediction.moyenne) return false;
+            predictions[index].status = 'high';
+        });
+        predictions.reverse();
+
+        $scope.predictions = predictions;
     }
 });

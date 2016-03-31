@@ -42,6 +42,7 @@
                     <ul class="nav nav-tabs" role="tablist">
                         <li role="presentation" class="active"><a href="#matches" aria-controls="matches" role="tab" data-toggle="tab">Wedstrijden</a></li>
                         <li role="presentation" ng-show="matches.length"><a href="#calculation" aria-controls="calculation" role="tab" data-toggle="tab">Berekening</a></li>
+                        <li role="presentation" ng-show="matches.length"><a href="#prediction" aria-controls="prediction" role="tab" data-toggle="tab">Voorspelling</a></li>
                     </ul>
                     <div class="tab-content">
                         <div role="tabpanel" class="tab-pane active" id="matches">
@@ -55,7 +56,7 @@
                                     <tr ng-repeat="(index, match) in matches" ng-class="{'info': index < 12, 'text-muted': index >= 12}">
                                         <th>{{ index + 1 }}</th>
                                         <td><a target="_blank" href="http://competitie.knbb.nl/carambole4.htm.php?GameID={{ match.gameid }}">{{ match.wedstrijdnummer }}</a></td>
-                                        <td class="text-right">{{ match.moyenne }}</td>
+                                        <td class="text-right">{{ match.moyenne|number:2 }}</td>
                                     </tr>
                                 </table>
                             </div>
@@ -88,7 +89,23 @@
                                         <td>{{ match.required }}</td>
                                         <td>{{ match.amount }}</td>
                                         <td>{{ match.turns }}</td>
-                                        <td class="text-right"><span ng-show="match.order == 11" class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> {{ match.moyenne|number:3 }}</td>
+                                        <td class="text-right"><span ng-show="match.order == 11" class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> {{ match.moyenne|number:2 }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="prediction">
+                            <div class="table-responsive">
+                                <table class="table table-condensed table-striped">
+                                    <tr>
+                                        <th>Voorwaarde</th>
+                                        <th>P.Moyenne</th>
+                                        <th>Nieuw moyenne</th>
+                                    </tr>
+                                    <tr ng-repeat="prediction in predictions" ng-class="{'text-muted': prediction.status == 'low' || prediction.status == 'high', 'info': prediction.status == 'mid'}">
+                                        <td>{{ prediction.required }} in {{ prediction.turns }}</td>
+                                        <td class="text-right">{{ (prediction.required / prediction.turns)|number:2}}</td>
+                                        <td class="text-right">{{ prediction.moyenne|number:2 }}</td>
                                     </tr>
                                 </table>
                             </div>
