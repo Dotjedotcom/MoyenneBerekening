@@ -51,7 +51,7 @@
                                     <tr>
                                         <th>#</th>
                                         <th>Wedstrijd</th>
-                                        <th>Moyenne</th>
+                                        <th class="text-right">Moyenne</th>
                                     </tr>
                                     <tr ng-repeat="(index, match) in matches" ng-class="{'info': index < 12, 'text-muted': index >= 12}">
                                         <th>{{ index + 1 }}</th>
@@ -82,7 +82,7 @@
                                         <th>Te maken</th>
                                         <th>Gemaakt</th>
                                         <th>Beurten</th>
-                                        <th>Moyenne</th>
+                                        <th class="text-right">Moyenne</th>
                                     </tr>
                                     <tr ng-repeat="match in matchDetails" ng-class="{'text-muted': !match.included, 'danger': !match.included, 'success': match.included, 'warning': match.included == 'pending'}">
                                         <th>{{ match.order + 1 }}</th>
@@ -99,8 +99,8 @@
                                 <table class="table table-condensed table-striped">
                                     <tr>
                                         <th>Voorwaarde</th>
-                                        <th>P.Moyenne</th>
-                                        <th>Nieuw moyenne</th>
+                                        <th class="text-right">P.Moyenne</th>
+                                        <th class="text-right">Nieuw moyenne</th>
                                     </tr>
                                     <tr ng-repeat="prediction in predictions" ng-class="{'text-muted': prediction.status == 'low' || prediction.status == 'high', 'info': prediction.status == 'mid'}">
                                         <td>{{ prediction.required }} in {{ prediction.turns }}</td>
