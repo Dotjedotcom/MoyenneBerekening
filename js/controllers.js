@@ -4,6 +4,7 @@ moyenneApp.controller('MainCtrl', function($scope, $http) {
     $scope.progress = 0;
     $scope.matchloader = false;
     $scope.error = false;
+    $scope.predictions = {};
     $scope.player = {
         id: '',
         name: 'Selecteer speler',
@@ -72,6 +73,7 @@ moyenneApp.controller('MainCtrl', function($scope, $http) {
         var required = 12;
         var done = 0;
         $scope.updateProgress(required, done);
+        resetPredictions();
         $.each($scope.matches, function(order, data){
             $http.get("carambole4.htm.php?player=" + $scope.player.id + "&id=" + data.gameid).then(function(response) {
                 response.data.order = order;
@@ -146,38 +148,65 @@ moyenneApp.controller('MainCtrl', function($scope, $http) {
         matches.push(match);
         return matches;
     };
-
-    var calculatePredictions = function() {
-        var required = $scope.player.required;
-        $scope.predictions = [];
-        var predictions = [];
-        var predictions_amount = 30;
-        var high = 0;
-        for(var i=0; i<predictions_amount; i++){
-            var matches = angular.copy($scope.matchDetails);
-            var turns = i+1;
-            var match = {'required': required, 'amount': required, 'turns': turns};
-            matches = addMatch(matches, match);
-            matches = markMatchDetails(matches);
-            var moyenne = calculate(matches).moyenne;
-            predictions[i] = {
-                'required': required,
-                'turns': turns,
-                'moyenne': moyenne,
-                'status': 'mid'
+    $scope.setPredictionMatch = function (index, match) {
+        $scope.predictions.matches[index] = match;
+        calculatePredictions();
+    };
+    $scope.removePredictionMatch = function(index) {
+        $scope.predictions.matches.splice(index, 1);
+        calculatePredictions();
+    };
+    var resetPredictions = function() {
+        $scope.predictions = {matches:[], results: []};
+        calculatePredictions();
+    };
+    var markPredictions = function(matches) {
+        $.each(matches, function(index, prediction) {
+            var nextMatch = matches[index+1];
+            if(typeof nextMatch != "undefined") {
+                if(nextMatch.moyenne != prediction.moyenne) return false;
             }
+            matches[index].status = 'low';
+        });
+        matches.reverse();
+        $.each(matches, function(index, prediction) {
+            var nextMatch = matches[index+1];
+            if(typeof nextMatch != "undefined") {
+                if (nextMatch.moyenne != prediction.moyenne) return false;
+            }
+            matches[index].status = 'high';
+        });
+        matches.reverse();
+        return matches;
+    };
+    var calculatePredictions = function() {
+        var predictions_amount = 30;
+        var required = $scope.player.required;
+        $scope.predictions.results = [];
+        var tmp_matches = angular.copy($scope.matchDetails);
+        for(var match_id = 0; match_id <= $scope.predictions.matches.length; match_id++) {
+            $scope.predictions.results[match_id] = [];
+            tmp_matches = angular.copy(tmp_matches);
+            var predictedMatch = $scope.predictions.matches[match_id-1];
+            if(typeof predictedMatch != "undefined") {
+                console.log('adding match');
+                tmp_matches = addMatch(tmp_matches, predictedMatch);
+            }
+            for(var i=0; i<predictions_amount; i++){
+                var matches = angular.copy(tmp_matches);
+                var turns = i+1;
+                var match = {'required': required, 'amount': required, 'turns': turns};
+                matches = addMatch(matches, match);
+                matches = markMatchDetails(matches);
+                var moyenne = calculate(matches).moyenne;
+                $scope.predictions.results[match_id][i] = {
+                    'required': required,
+                    'turns': turns,
+                    'moyenne': moyenne,
+                    'status': 'mid'
+                };
+            }
+            $scope.predictions.results[match_id] = markPredictions($scope.predictions.results[match_id]);
         }
-        $.each(predictions, function(index, prediction) {
-            if(predictions[index+1].moyenne != prediction.moyenne) return false;
-            predictions[index].status = 'low';
-        });
-        predictions.reverse();
-        $.each(predictions, function(index, prediction) {
-            if(predictions[index+1].moyenne != prediction.moyenne) return false;
-            predictions[index].status = 'high';
-        });
-        predictions.reverse();
-
-        $scope.predictions = predictions;
     }
 });
