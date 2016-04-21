@@ -42,6 +42,7 @@ function getMatches($html) {
     $matchesTable = $html->find('table')[1];
     $map = array('district', 'poule', 'nummer', 'datum', 'wedstrijdnummer', 'moyenne');
     $matches = array('poule', 'beker');
+    $ignores = array('degradatiepoule');
     $result = array();
     foreach($matchesTable->children as $row) {
         $match = array();
@@ -55,6 +56,7 @@ function getMatches($html) {
         foreach($row->find('a') as $link) {
             $match['gameid'] = str_replace('carambole4.htm.php?GameID=', '', $link->href);
         }
+        if (strposa(strtolower($match['poule']), $ignores)) continue;
         if (strposa(strtolower($match['poule']), $matches)) $result[] = $match;
     }
     array_shift($result);
