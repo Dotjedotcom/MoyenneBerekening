@@ -84,14 +84,38 @@
                                         <th>Beurten</th>
                                         <th class="text-right">Moyenne</th>
                                     </tr>
-                                    <tr ng-repeat="match in matchDetails" ng-class="{'text-muted': !match.included, 'danger': !match.included, 'success': match.included, 'warning': match.included == 'pending'}">
+                                    <tr ng-repeat="match in matchDetails" ng-class="{'text-danger': match.usermatch, 'text-muted': !match.included && !match.usermatch, 'danger': !match.included, 'success': match.included, 'warning': match.included == 'pending'}">
                                         <th>{{ match.order + 1 }}</th>
                                         <td>{{ match.required }}</td>
                                         <td>{{ match.amount }}</td>
                                         <td>{{ match.turns }}</td>
-                                        <td class="text-right"><span ng-show="match.order == 11" class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> {{ match.moyenne|number:2 }}</td>
+                                        <td class="text-right"><span ng-show="match.usermatch" class="glyphicon glyphicon-pencil"></span> <span ng-show="match.order == 11" class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> {{ match.moyenne|number:2 }}</td>
                                     </tr>
                                 </table>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-condensed" ng-show="userMatches.length">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Gemaakt</th>
+                                        <th>Beurten</th>
+                                        <th></th>
+                                    </tr>
+                                    <tr ng-repeat="match in userMatches track by $index">
+                                        <td>{{ $index + 1 }}</td>
+                                        <td><input type="number" class="form-control input-sm" ng-model="userMatches[$index].amount" ng-change="calculateCurrent()"/></td>
+                                        <td><input type="number" class="form-control input-sm" ng-model="userMatches[$index].turns" ng-change="calculateCurrent()"/></td>
+                                        <td><button type="button" class="btn btn-default btn-sm" ng-click="removeUserMatch($index)"><span class="glyphicon glyphicon-remove"></span></button></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="panel panel-default">
+                                <div class="panel-body">
+                                    <form class="form-inline">
+                                        <button type="button" class="btn btn-primary btn-sm" ng-click="addUserMatch()">Wedstrijd handmatig toevoegen</button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                         <div role="tabpanel" class="tab-pane" id="prediction">

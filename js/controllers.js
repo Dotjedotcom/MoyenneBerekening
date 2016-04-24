@@ -21,10 +21,12 @@ moyenneApp.controller('MainCtrl', function($scope, $http) {
         221517: 'Ed Huisman'
     };
     $scope.calculations = {};
+    var onlineMatchDetails = [];
     $scope.matchDetails = [];
     $scope.matches = [];
+    $scope.userMatches = [];
     $scope.setPlayer = function(id) {
-        $scope.matches = [],
+        $scope.matches = [];
         $scope.player = {
             id: parseInt(id),
             name: $scope.players[id]
@@ -68,26 +70,26 @@ moyenneApp.controller('MainCtrl', function($scope, $http) {
     };
     $scope.fetchMatchDetails = function() {
         $scope.matchDetails = [];
+        onlineMatchDetails = [];
         $scope.progress = 0;
         $scope.calculations.current = {};
         var required = 12;
         var done = 0;
         $scope.updateProgress(required, done);
         resetPredictions();
+        resetUserMatches();
         $.each($scope.matches, function(order, data){
             $http.get("carambole4.htm.php?player=" + $scope.player.id + "&id=" + data.gameid).then(function(response) {
                 response.data.order = order;
                 response.data.included = 'pending';
                 response.data.moyenne = response.data.amount / response.data.turns;
-                $scope.matchDetails.push(response.data);
+                onlineMatchDetails.push(response.data);
                 $scope.updateProgress(required, ++done);
                 if(order == 1) {
                     $scope.player.required = response.data.required;
                 }
                 if(done == required) {
-                    $scope.matchDetails = markMatchDetails($scope.matchDetails);
-                    calculateCurrent();
-                    calculatePredictions();
+                    $scope.calculateCurrent();
                 }
             });
             return order<11;
@@ -126,11 +128,19 @@ moyenneApp.controller('MainCtrl', function($scope, $http) {
         return result;
     };
 
-    var calculateCurrent = function() {
+    $scope.calculateCurrent = function() {
+        $scope.matchDetails = [];
+        var tmp_matches = angular.copy(onlineMatchDetails);
+        $.each(angular.copy($scope.userMatches), function(id, match) {
+            match.required = $scope.player.required;
+            tmp_matches = addMatch(tmp_matches, match, true);
+        });
+        $scope.matchDetails = markMatchDetails(tmp_matches);
         $scope.calculations.current = calculate($scope.matchDetails);
+        calculatePredictions();
     };
 
-    var addMatch = function(matches, match) {
+    var addMatch = function(matches, match, userMatch) {
         matches.sort(function(a,b){
             if(a.order > b.order) {
                 return 1;
@@ -140,10 +150,11 @@ moyenneApp.controller('MainCtrl', function($scope, $http) {
             return 0;
         });
         matches.pop();
-        $.each(matches, function(id, match) {
+        $.each(matches, function(id) {
             matches[id].order++;
         });
         match.order = 0;
+        match.usermatch = userMatch;
         match.moyenne = match.amount / match.turns;
         matches.push(match);
         return matches;
@@ -159,6 +170,19 @@ moyenneApp.controller('MainCtrl', function($scope, $http) {
     var resetPredictions = function() {
         $scope.predictions = {matches:[], results: []};
         calculatePredictions();
+    };
+    var resetUserMatches = function() {
+        $scope.userMatches = [];
+    };
+    $scope.addUserMatch = function() {
+        $scope.userMatches.push({amount: 1, turns: 1});
+        $scope.calculateCurrent();
+    };
+    $scope.removeUserMatch = function(index) {
+        if (index >= 0) {
+            $scope.userMatches.splice(index, 1);
+        }
+        $scope.calculateCurrent();
     };
     var markPredictions = function(matches) {
         $.each(matches, function(index, prediction) {
