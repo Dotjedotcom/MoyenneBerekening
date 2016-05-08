@@ -44,7 +44,7 @@ function getMatches($html)
 {
     $matchesTable = $html->find('table')[1];
     $map = array('district', 'poule', 'nummer', 'datum', 'wedstrijdnummer', 'moyenne');
-    $matches = array('poule', 'beker');
+    $matches = array('poule', 'beker', 'halve finale \'s-gravenhage', 'halve finale beesd', 'halve finale emmeloord', 'halve finale \'s-gravenhage', 'halve finale sneek');
     $ignores = array('degradatiepoule');
     $result = array();
     foreach ($matchesTable->children as $row) {
