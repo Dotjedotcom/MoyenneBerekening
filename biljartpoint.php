@@ -1,7 +1,7 @@
 <?php
 include('lib/simple_html_dom.php');
 
-$bondsNr = $_GET['bondsnr'];
+$bondsNr = $_GET['id'];
 
 $seasons = [
     '2013-2014',
