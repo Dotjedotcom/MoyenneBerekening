@@ -1,10 +1,7 @@
 <?php
 include('lib/simple_html_dom.php');
 
-$page = $_GET['page'];
 $bondsNr = $_GET['bondsnr'];
-$klasse = $_GET['klasse'];
-$district = $_GET['d'];
 
 $seasons = [
     '2013-2014',
@@ -17,15 +14,15 @@ $seasons = [
     '2020-2021',
 ];
 
-function fetchPlayerAndMatches($page, $bondsNr, $klasse, $seasons, $district) {
+function fetchPlayerAndMatches($bondsNr, $seasons) {
     // fetch html
     $url = 'http://biljartpoint.nl/';
     $query = [
-        'page' => $page,
+        'page' => 'pr',
         'bondsnr' => $bondsNr,
-        'klasse' => $klasse,
+        'klasse' => 'K',
         'seizoen' => '',
-        'd' => $district
+        'd' => 47
     ];
 
     $playerName = null;
@@ -85,7 +82,7 @@ function decodeMatches($matches) {
     return $result;
 }
 
-list($player, $matches) = fetchPlayerAndMatches($page, $bondsNr, $klasse, $seasons, $district);
+list($player, $matches) = fetchPlayerAndMatches($bondsNr, $seasons);
 $decodedMatches = decodeMatches($matches);
 
 $result = [
