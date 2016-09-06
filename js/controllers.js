@@ -11,12 +11,11 @@ moyenneApp.controller('MainCtrl', function ($scope, $http) {
         required: 0
     };
     $scope.players = {
-        142008: 'Gert van Beek',
         147498: 'Raymond van Garderen',
         178938: 'Ricardo Diters',
         164899: 'Martin Vreekamp',
+        103677: 'Fred Driessen',
         141933: 'René van Aerle',
-        101115: 'Cees Oskam',
         213841: 'Hans Walraven',
         221517: 'Ed Huisman'
     };
