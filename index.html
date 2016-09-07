@@ -38,6 +38,9 @@
             <div class="col-md-12 text-center" ng-show="!matches.length && !matchloader && player.id">
                 <div class="alert alert-danger" role="alert">Minimaal 1 wedstrijd nodig om berekeningen en voorspellingen te kunnen doen, begin eerst maar eens te biljarten voordat je gaat drukken.</div>
             </div>
+            <div class="col-md-12 text-center" ng-show="!matches.length && !matchloader && !player.id">
+                <div class="alert alert-info" role="alert">Selecteer een speler</div>
+            </div>
         </div>
         <div class="row">
             <div class="col-md-12" ng-show="matches.length">
