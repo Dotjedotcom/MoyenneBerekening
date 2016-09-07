@@ -34,13 +34,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-12 text-center" ng-show="matchloader"><img src="img/loading.gif"/></div>
-        </div>
-        <div class="row">
             <div class="col-md-12" ng-show="matches.length">
-                <div class="progress" ng-show="progress < 100">
-                    <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em; width: {{ progress }}%;">{{ progress }}%</div>
-                </div>
                 <div>
                     <ul class="nav nav-tabs" role="tablist">
                         <li role="presentation" class="active"><a href="#matches" aria-controls="matches" role="tab" data-toggle="tab">Wedstrijden</a></li>
@@ -53,12 +47,20 @@
                                 <table class="table table-condensed table-striped">
                                     <tr>
                                         <th>#</th>
-                                        <th>Wedstrijd</th>
-                                        <th class="text-right">Moyenne</th>
+                                        <th>Datum</th>
+                                        <th>Tegenstander</th>
+                                        <th class="text-right">Tcar</th>
+                                        <th class="text-right">car</th>
+                                        <th class="text-right">brt</th>
+                                        <th class="text-right">moy</th>
                                     </tr>
                                     <tr ng-repeat="(index, match) in matches" ng-class="{'info': index < 12, 'text-muted': index >= 12}">
                                         <th>{{ index + 1 }}</th>
-                                        <td><a target="_blank" href="http://competitie.knbb.nl/carambole4.htm.php?GameID={{ match.gameid }}">{{ match.wedstrijdnummer }}</a></td>
+                                        <td>{{ match.datum }}</td>
+                                        <td>{{ match.opponent }}</td>
+                                        <td class="text-right">{{ match.required }}</td>
+                                        <td class="text-right">{{ match.amount }}</td>
+                                        <td class="text-right">{{ match.turns }}</td>
                                         <td class="text-right">{{ match.moyenne|number:2 }}</td>
                                     </tr>
                                 </table>

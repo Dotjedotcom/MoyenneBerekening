@@ -69,9 +69,10 @@ function decodeMatches($matches) {
             $match = [
                 'datum' => $date,
                 'opponent' => formatOpponent($opponent),
-                'required' => $tCar,
-                'amount' => $car,
-                'turns' => $turns,
+                'required' => intval($tCar),
+                'amount' => intval($car),
+                'turns' => intval($turns),
+                'moyenne' => intval($car) / intval($turns),
             ];
             $result[] = $match;
         }
@@ -87,6 +88,6 @@ $decodedMatches = decodeMatches($matches);
 
 $result = [
     'player' => $player,
-    'matches' => $decodedMatches,
+    'matches' => array_reverse($decodedMatches),
 ];
 echo json_encode($result);

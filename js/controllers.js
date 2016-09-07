@@ -1,7 +1,6 @@
 var moyenneApp = angular.module('moyenneApp', []);
 
 moyenneApp.controller('MainCtrl', function ($scope, $http) {
-    $scope.progress = 0;
     $scope.matchloader = false;
     $scope.error = false;
     $scope.predictions = {};
@@ -37,62 +36,33 @@ moyenneApp.controller('MainCtrl', function ($scope, $http) {
     };
     $scope.fetchPlayer = function () {
         $scope.matchloader = true;
-        $http.get("participance.php?id=" + $scope.player.id).then(function (response) {
+        $http.get("biljartpoint.php?id=" + $scope.player.id).then(function (response) {
             if (response.data.error) {
                 $scope.error = true;
             } else {
                 $scope.error = false;
-                $scope.addPlayer(response.data.player);
+                $scope.addPlayer({'id': $scope.player.id, 'name': response.data.player});
                 $scope.matches = response.data.matches;
-                $scope.matches.sort(function (a, b) {
-                    if (a.timestamp < b.timestamp) {
-                        return 1;
-                    } else if (a.timestamp > b.timestamp) {
-                        return -1;
-                    } else {
-                        if (a.nummer < b.nummer) {
-                            return -1;
-                        } else if (a.nummer > b.nummer) {
-                            return 1;
-                        }
-                        return 0;
-                    }
-                });
             }
             $scope.matchloader = false;
-            $scope.fetchMatchDetails();
+            $scope.calculateMatchDetails();
         });
     };
-
-    $scope.updateProgress = function (required, done) {
-        $scope.progress = Math.round((done / required) * 100);
-    };
-    $scope.fetchMatchDetails = function () {
+    $scope.calculateMatchDetails = function () {
         $scope.matchDetails = [];
         onlineMatchDetails = [];
-        $scope.progress = 0;
         $scope.calculations.current = {};
-        var required = 12;
-        var done = 0;
-        $scope.updateProgress(required, done);
         resetPredictions();
         resetUserMatches();
         $.each($scope.matches, function (order, data) {
-            $http.get("carambole4.htm.php?player=" + $scope.player.id + "&id=" + data.gameid).then(function (response) {
-                response.data.order = order;
-                response.data.included = 'pending';
-                response.data.moyenne = response.data.amount / response.data.turns;
-                onlineMatchDetails.push(response.data);
-                $scope.updateProgress(required, ++done);
-                if (order == 1) {
-                    $scope.player.required = response.data.required;
-                }
-                if (done == required) {
-                    $scope.calculateCurrent();
-                }
-            });
+            data.order = order;
+            onlineMatchDetails.push(data);
+            if (order == 1) {
+                $scope.player.required = data.required;
+            }
             return order < 11;
         });
+        $scope.calculateCurrent();
     };
     var markMatchDetails = function (matchDetails) {
         matchDetails.sort(function (a, b) {
@@ -103,12 +73,32 @@ moyenneApp.controller('MainCtrl', function ($scope, $http) {
             }
             return 0;
         });
-        var counter = 0;
         $.each(matchDetails, function (id, data) {
-            counter++;
-            matchDetails[id].included = !(counter <= 3 || counter > 9);
+            matchDetails[id].included = true;
         });
+        var cutoffAmount = getCutoffAmount(matchDetails.length);
+        for(var i=0; i<2; i++) {
+            var counter = 0;
+            $.each(matchDetails, function (id, data) {
+                counter++;
+                if(counter <= cutoffAmount) {
+                    matchDetails[id].included = false;
+                }
+            });
+            matchDetails.reverse();
+        }
         return matchDetails;
+    };
+
+    var getCutoffAmount = function (size) {
+        if (size >= 11) {
+            return 3;
+        } else if (size >= 8) {
+            return 2;
+        } else if (size >= 5) {
+            return 1;
+        }
+        return 0;
     };
 
     var calculate = function (matches) {
@@ -148,7 +138,9 @@ moyenneApp.controller('MainCtrl', function ($scope, $http) {
             }
             return 0;
         });
-        matches.pop();
+        if(matches.length >= 12) {
+            matches.pop();
+        }
         $.each(matches, function (id) {
             matches[id].order++;
         });
