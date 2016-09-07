@@ -57,7 +57,7 @@ moyenneApp.controller('MainCtrl', function ($scope, $http) {
         $.each($scope.matches, function (order, data) {
             data.order = order;
             onlineMatchDetails.push(data);
-            if (order == 1) {
+            if (order == 0) {
                 $scope.player.required = data.required;
             }
             return order < 11;
