@@ -4,50 +4,58 @@ moyenneApp.controller('MainCtrl', function ($scope, $http) {
     $scope.matchloader = false;
     $scope.error = false;
     $scope.predictions = {};
+    $scope.selectedPlayer = false;
     $scope.player = {
         id: '',
-        name: 'Selecteer speler',
+        name: '',
         required: 0
-    };
-    $scope.players = {
-        147498: 'Raymond van Garderen',
-        178938: 'Ricardo Diters',
-        164899: 'Martin Vreekamp',
-        103677: 'Fred Driessen',
-        141933: 'René van Aerle',
-        213841: 'Hans Walraven',
-        221517: 'Ed Huisman'
     };
     $scope.calculations = {};
     var onlineMatchDetails = [];
     $scope.matchDetails = [];
     $scope.matches = [];
     $scope.userMatches = [];
-    $scope.setPlayer = function (id) {
+    $scope.setPlayer = function (playerData) {
         $scope.matches = [];
-        $scope.player = {
-            id: parseInt(id),
-            name: $scope.players[id]
-        };
+        $scope.player = playerData;
+        $scope.selectedPlayer = playerData.id;
         $scope.fetchPlayer();
     };
-    $scope.addPlayer = function (player) {
-        $scope.players[player.id] = player.name;
+
+    $scope.addPlayer = function (playerData) {
+        if($scope.players[playerData.id] === undefined) {
+            $scope.players[playerData.id] = playerData;
+        }
     };
+
+    var fetchTeam = function () {
+        $http.get("team.php").then(function (response) {
+            if (response.data.error) {
+                $scope.error = true;
+            } else {
+                $scope.players = response.data;
+            }
+        });
+    };
+    fetchTeam();
+
     $scope.fetchPlayer = function () {
         $scope.matchloader = true;
-        $http.get("biljartpoint.php?id=" + $scope.player.id).then(function (response) {
+        $http.get("biljartpoint.php?id=" + $scope.selectedPlayer).then(function (response) {
             if (response.data.error) {
                 $scope.error = true;
             } else {
                 $scope.error = false;
-                $scope.addPlayer({'id': $scope.player.id, 'name': response.data.player});
+                var player = {'id': response.data.player.id, 'name': response.data.player.name, 'required': false};
+                $scope.addPlayer(player);
+                $scope.fetchedPlayer = player.id;
                 $scope.matches = response.data.matches;
             }
             $scope.matchloader = false;
             $scope.calculateMatchDetails();
         });
     };
+
     $scope.calculateMatchDetails = function () {
         $scope.matchDetails = [];
         onlineMatchDetails = [];
@@ -57,9 +65,6 @@ moyenneApp.controller('MainCtrl', function ($scope, $http) {
         $.each($scope.matches, function (order, data) {
             data.order = order;
             onlineMatchDetails.push(data);
-            if (order == 0) {
-                $scope.player.required = data.required;
-            }
             return order < 11;
         });
         $scope.calculateCurrent();

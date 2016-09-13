@@ -47,6 +47,7 @@ function getPlainText($td) {
     $string = trim($td->plaintext);
     return $string;
 }
+
 function formatOpponent($string) {
     $string = str_replace('  ', ' ', $string);
     $string = preg_replace('~[\r\n\t]+~', ' ', $string);
@@ -87,7 +88,10 @@ list($player, $matches) = fetchPlayerAndMatches($bondsNr, $seasons);
 $decodedMatches = decodeMatches($matches);
 
 $result = [
-    'player' => $player,
+    'player' => [
+        'id' => $bondsNr,
+        'name' => $player,
+    ],
     'matches' => array_reverse($decodedMatches),
 ];
 echo json_encode($result);

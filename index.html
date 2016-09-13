@@ -23,12 +23,12 @@
                         <form class="form-inline">
                             <div class="form-group" ng-class="{'has-error': error}">
                                 <label for="bondsnummer">Bondsnummer: </label>
-                                <input type="number" class="form-control" ng-model="player.id" id="bondsnummer" placeholder="123456">
+                                <input type="number" class="form-control" ng-model="selectedPlayer" id="bondsnummer" placeholder="123456">
                             </div>
                             <button type="submit" class="btn btn-primary" ng-click="fetchPlayer()">Go!</button>
                         </form>
                         <hr/>
-                        <span ng-repeat="(id, name) in players"><button type="button" class="btn btn-default" ng-click="setPlayer(id)" ng-class="{'btn-primary': id == player.id}">{{ name }}</button> </span>
+                        <span ng-repeat="(id, data) in players"><button type="button" class="btn btn-default" ng-click="setPlayer(data)" ng-class="{'btn-primary': id == fetchedPlayer}">{{ data.name }}</button> </span>
                     </div>
                 </div>
             </div>
@@ -48,7 +48,7 @@
                     <ul class="nav nav-tabs" role="tablist">
                         <li role="presentation" class="active"><a href="#matches" aria-controls="matches" role="tab" data-toggle="tab">Wedstrijden</a></li>
                         <li role="presentation" ng-show="matches.length"><a href="#calculation" aria-controls="calculation" role="tab" data-toggle="tab">Berekening</a></li>
-                        <li role="presentation" ng-show="matches.length"><a href="#prediction" aria-controls="prediction" role="tab" data-toggle="tab">Voorspelling</a></li>
+                        <li role="presentation" ng-show="matches.length && player.required"><a href="#prediction" aria-controls="prediction" role="tab" data-toggle="tab">Voorspelling</a></li>
                     </ul>
                     <div class="tab-content">
                         <div role="tabpanel" class="tab-pane active" id="matches">
@@ -129,7 +129,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div role="tabpanel" class="tab-pane" id="prediction">
+                        <div role="tabpanel" class="tab-pane" id="prediction" ng-show="player.required">
                             <div class="table-responsive" ng-show="calculations.current.amount">
                                 <table class="table table-condensed table-striped">
                                     <tr>
