@@ -14,6 +14,17 @@ $seasons = [
     '2020-2021',
 ];
 
+function getLegacyMatches($bondsNr) {
+    $matches = [];
+    if($bondsNr == "103677") { # Fred Driessen, 2014/1015
+        array_push($matches, ['datum' => '2014-10-10', 'opponent' => 'Harold Megens (Touché)', 'required' => 110, 'amount' => 110, 'turns' => 6, 'moyenne' => 110/6]);
+        array_push($matches, ['datum' => '2014-10-10', 'opponent' => 'Harold Megens (Touché)', 'required' => 110, 'amount' => 110, 'turns' => 9, 'moyenne' => 110/9]);
+        array_push($matches, ['datum' => '2014-12-04', 'opponent' => 'Marten Neuteboom (Gelre 1)', 'required' => 110, 'amount' => 110, 'turns' => 5, 'moyenne' => 110/5]);
+        array_push($matches, ['datum' => '2014-12-04', 'opponent' => 'Marten Neuteboom (Gelre 1)', 'required' => 110, 'amount' => 110, 'turns' => 7, 'moyenne' => 110/7]);
+    }
+    return $matches;
+}
+
 function fetchPlayerAndMatches($bondsNr, $seasons) {
     // fetch html
     $url = 'http://biljartpoint.nl/';
@@ -61,8 +72,7 @@ function getPlayerName($bondsNr, $seizoen, $title) {
     return trim($title);
 }
 
-function decodeMatches($matches) {
-    $result = [];
+function decodeMatches($matches, $result = []) {
     foreach($matches as $match) {
         $columns = array_map('getPlainText', $match->find('td'));
         if(sizeof($columns) == 12) { // Row containing 12 columns are match details
@@ -85,8 +95,7 @@ function decodeMatches($matches) {
 }
 
 list($player, $matches) = fetchPlayerAndMatches($bondsNr, $seasons);
-$decodedMatches = decodeMatches($matches);
-
+$decodedMatches = decodeMatches($matches, getLegacyMatches($bondsNr));
 $result = [
     'player' => [
         'id' => $bondsNr,
