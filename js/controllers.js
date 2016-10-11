@@ -118,7 +118,7 @@ moyenneApp.controller('MainCtrl', function ($scope, $http) {
                 result.turns += data.turns;
             }
         });
-        result.moyenne = result.amount / result.turns;
+        result.moyenne = Math.floor((result.amount / result.turns * 100)) / 100;
         return result;
     };
 
