@@ -75,8 +75,8 @@ function getPlayerName($bondsNr, $seizoen, $title) {
 function decodeMatches($matches, $result = []) {
     foreach($matches as $match) {
         $columns = array_map('getPlainText', $match->find('td'));
-        if(sizeof($columns) == 12) { // Row containing 12 columns are match details
-            list(, $date, , $opponent, $tCar, $car, $turns) = $columns;
+        if(sizeof($columns) == 13) { // Row containing 12 columns are match details
+            list(, $date, , , $opponent, $tCar, $car, $turns) = $columns;
             $match = [
                 'datum' => $date,
                 'opponent' => formatOpponent($opponent),
