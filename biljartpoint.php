@@ -14,6 +14,11 @@ $seasons = [
     '2020-2021',
 ];
 
+function includeAfter($bondsNr) {
+    if ($bondsNr == "147498") return 1495238400; # Raymond van Garderen, 20-05-2017
+    return 0;
+}
+
 function getLegacyMatches($bondsNr) {
     $matches = [];
     if($bondsNr == "103677") { # Fred Driessen, 2014/1015
@@ -79,6 +84,7 @@ function decodeMatches($matches, $result = []) {
             list(, $date, , , $opponent, $tCar, $car, $turns) = $columns;
             $match = [
                 'datum' => $date,
+                'timestamp' => strtotime($date),
                 'opponent' => formatOpponent($opponent),
                 'required' => intval($tCar),
                 'amount' => intval($car),
@@ -94,6 +100,14 @@ function decodeMatches($matches, $result = []) {
     return $result;
 }
 
+function filterMatches($bondsNr, $matches) {
+    $includeAfter = includeAfter($bondsNr);
+    $matches = array_filter($matches, function($element) use ($includeAfter) {
+        return $includeAfter == 0 || intval($element['timestamp']) > $includeAfter;
+    });
+    return $matches;
+}
+
 list($player, $matches) = fetchPlayerAndMatches($bondsNr, $seasons);
 $decodedMatches = decodeMatches($matches, getLegacyMatches($bondsNr));
 $result = [
@@ -101,6 +115,6 @@ $result = [
         'id' => $bondsNr,
         'name' => $player,
     ],
-    'matches' => array_reverse($decodedMatches),
+    'matches' => filterMatches($bondsNr, array_reverse($decodedMatches)),
 ];
 echo json_encode($result);
