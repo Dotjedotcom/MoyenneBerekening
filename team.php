@@ -8,8 +8,8 @@ function getPlainText($td) {
 $url = 'http://biljartpoint.nl/';
 $query = [
     'page' => 'teamdetail',
-    'team_id' => 39461,
-    'compid' => 3332,
+    'team_id' => 47340,
+    'compid' => 4083,
     'poule' => 1,
     'district' => 24
 ];

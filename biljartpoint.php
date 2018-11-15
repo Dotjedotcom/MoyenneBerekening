@@ -38,7 +38,7 @@ function fetchPlayerAndMatches($bondsNr, $seasons) {
         'bondsnr' => $bondsNr,
         'klasse' => 'K',
         'seizoen' => '',
-        'd' => 47
+        'd' => 24
     ];
 
     $playerName = null;
@@ -80,16 +80,17 @@ function getPlayerName($bondsNr, $seizoen, $title) {
 function decodeMatches($matches, $result = []) {
     foreach($matches as $match) {
         $columns = array_map('getPlainText', $match->find('td'));
-        if(sizeof($columns) == 13) { // Row containing 12 columns are match details
-            list(, $date, , , $opponent, $tCar, $car, $turns) = $columns;
+        if(sizeof($columns) == 14) { // Row containing 12 columns are match details
+//            list(, $date, , , $opponent, $tCar, $car, $turns) = $columns;
+            list($nr, $date, $kl, $p, $tnr, $tegenstander, $tear, $car, $brt, $moy, $pnt, $hs, $algmoy, $pmoy) = $columns;
             $match = [
                 'datum' => $date,
                 'timestamp' => strtotime($date),
-                'opponent' => formatOpponent($opponent),
-                'required' => intval($tCar),
+                'opponent' => formatOpponent($tegenstander),
+                'required' => intval($tear),
                 'amount' => intval($car),
-                'turns' => intval($turns),
-                'moyenne' => intval($car) / intval($turns),
+                'turns' => intval($brt),
+                'moyenne' => intval($car) / intval($brt),
             ];
             $result[] = $match;
         }
