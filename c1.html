@@ -95,7 +95,7 @@
                                         <th>Beurten</th>
                                         <th class="text-right">Moyenne</th>
                                     </tr>
-                                    <tr ng-repeat="match in matchDetails" ng-class="{'text-danger': match.usermatch, 'text-muted': !match.included && !match.usermatch, 'danger': !match.included, 'success': match.included, 'warning': match.included == 'pending'}">
+                                    <tr ng-repeat="match in matchDetails" class="success">
                                         <th>{{ match.order + 1 }}</th>
                                         <td>{{ match.required }}</td>
                                         <td>{{ match.amount }}</td>
