@@ -81,13 +81,12 @@ function decodeMatches($matches, $result = []) {
     foreach($matches as $match) {
         $columns = array_map('getPlainText', $match->find('td'));
         if(sizeof($columns) == 14) { // Row containing 12 columns are match details
-//            list(, $date, , , $opponent, $tCar, $car, $turns) = $columns;
-            list($nr, $date, $kl, $p, $tnr, $tegenstander, $tear, $car, $brt, $moy, $pnt, $hs, $algmoy, $pmoy) = $columns;
+            list($nr, $date, $kl, $p, $tnr, $tegenstander, $tcar, $car, $brt, $moy, $pnt, $hs, $algmoy, $pmoy) = $columns;
             $match = [
                 'datum' => $date,
                 'timestamp' => strtotime($date),
                 'opponent' => formatOpponent($tegenstander),
-                'required' => intval($tear),
+                'required' => intval($tcar),
                 'amount' => intval($car),
                 'turns' => intval($brt),
                 'moyenne' => intval($car) / intval($brt),
