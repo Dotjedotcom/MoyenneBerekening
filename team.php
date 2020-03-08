@@ -29,11 +29,11 @@ $players = [];
 foreach($teamTable->find('tr') as $rows){
     $columns = array_map('getPlainText', $rows->find('td'));
     if (sizeof($columns) < max($keys)) continue;
-    $players[intval($columns[$keys['bondsNr']])] = [
+    array_push($players, [
         'id' => intval($columns[$keys['bondsNr']]),
         'name' => $columns[$keys['name']],
         'required' => intval($columns[$keys['car']]),
-    ];
+    ]);
 }
 
-echo json_encode($players);
+file_put_contents($argv[1], json_encode($players));

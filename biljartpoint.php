@@ -1,8 +1,6 @@
 <?php
 include('lib/simple_html_dom.php');
 
-$bondsNr = $_GET['id'];
-
 $seasons = [
     '2013-2014',
     '2014-2015',
@@ -108,13 +106,19 @@ function filterMatches($bondsNr, $matches) {
     return $matches;
 }
 
-list($player, $matches) = fetchPlayerAndMatches($bondsNr, $seasons);
-$decodedMatches = decodeMatches($matches, getLegacyMatches($bondsNr));
-$result = [
-    'player' => [
-        'id' => $bondsNr,
-        'name' => $player,
-    ],
-    'matches' => filterMatches($bondsNr, array_reverse($decodedMatches)),
-];
-echo json_encode($result);
+$string = file_get_contents($argv[1]);
+$json = json_decode($string, true);
+
+foreach ($json as $value) {
+    $bondsNr = $value["id"];
+    list($player, $matches) = fetchPlayerAndMatches($bondsNr, $seasons);
+    $decodedMatches = decodeMatches($matches, getLegacyMatches($bondsNr));
+    $result = [
+        'player' => [
+            'id' => $bondsNr,
+            'name' => $player,
+        ],
+        'matches' => filterMatches($bondsNr, array_reverse($decodedMatches)),
+    ];
+    file_put_contents($argv[2] . $bondsNr . ".json", json_encode($result));
+}

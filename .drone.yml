@@ -8,6 +8,16 @@ platform:
     arch: arm
 
 steps:
+- name: get team data
+  image: php:7.2
+  commands:
+    - php team.php js/data/team.json
+
+- name: get player data
+  image: php:7.2
+  commands:
+    - php biljartpoint.php js/data/team.json js/data/
+
 - name: upload
   image: plugins/s3
   settings:
@@ -22,3 +32,4 @@ steps:
     acl: public-read
     exclude:
       - .git/**/*
+      - .*
