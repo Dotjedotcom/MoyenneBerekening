@@ -1,3 +1,4 @@
 /.idea/*
 .remote-sync.json
 .secrets.txt
+/node_modules/
