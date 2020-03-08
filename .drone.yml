@@ -1,0 +1,24 @@
+---
+kind: pipeline
+type: docker
+name: default
+
+platform:
+    os: linux
+    arch: arm
+
+steps:
+- name: upload
+  image: plugins/s3
+  settings:
+    bucket: moyenne.carambolecomputer.nl
+    region: eu-central-1
+    access_key:
+      from_secret: aws_access_key_id
+    secret_key:
+      from_secret: aws_secret_access_key
+    source: ./**/*
+    target: /moyenne
+    acl: public-read
+    exclude:
+      - .git/**/*
